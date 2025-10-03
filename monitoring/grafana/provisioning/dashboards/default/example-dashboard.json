@@ -1,0 +1,74 @@
+{
+  "id": null,
+  "title": "Infrastructure Overview",
+  "uid": "infra_overview",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "type": "graph",
+      "title": "CPU Usage (%)",
+      "targets": [
+        {
+          "expr": "100 - (avg by(instance_name) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{instance_name}}",
+          "refId": "A"
+        }
+      ],
+      "lines": true,
+      "points": false,
+      "linewidth": 2,
+      "fill": 1,
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 6 }
+    },
+    {
+      "type": "graph",
+      "title": "Memory Usage (%)",
+      "targets": [
+        {
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
+          "legendFormat": "{{instance_name}}",
+          "refId": "A"
+        }
+      ],
+      "lines": true,
+      "points": false,
+      "linewidth": 2,
+      "fill": 1,
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 6 }
+    },
+    {
+      "type": "graph",
+      "title": "Frontend Requests (ALB)",
+      "targets": [
+        {
+          "expr": "round(increase(aws_applicationelb_request_count_sum[5m]))",
+          "legendFormat": "{{load_balancer}}",
+          "refId": "A"
+        }
+      ],
+      "lines": true,
+      "points": false,
+      "linewidth": 2,
+      "fill": 1,
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 6 }
+    },
+    {
+      "type": "graph",
+      "title": "Infrastructure Costs (USD)",
+      "targets": [
+        {
+          "expr": "aws_billing_estimated_charges_maximum{currency=\"USD\"}",
+          "legendFormat": "{{currency}}",
+          "refId": "A"
+        }
+      ],
+      "lines": true,
+      "points": false,
+      "linewidth": 2,
+      "fill": 1,
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 6 }
+    }
+  ]
+}

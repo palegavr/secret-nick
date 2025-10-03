@@ -1,5 +1,5 @@
-name: deploy microservice
-run-name: deploy ${{ inputs.microservice }}
+name: Deploy Workflow
+run-name: Deploy ${{ inputs.microservice }}
 
 on:
   workflow_call:
@@ -7,7 +7,7 @@ on:
       microservice:
         required: true
         type: string
-        description: 'Target microservice (react, angular, dotnet)'
+        description: 'Target microservice (react, angular, dotnet, grafana, prometheus)'
       image_tag:
         required: false
         type: string
@@ -24,6 +24,8 @@ on:
           - react
           - angular
           - dotnet
+          - grafana
+          - prometheus
 
       image_tag:
         description: 'Docker image tag (default: latest)'
@@ -38,11 +40,14 @@ env:
 
 jobs:
   deploy:
-    name: deploy ${{ inputs.microservice }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1  
      
       - name: set environment variables
         id: vars
@@ -50,10 +55,6 @@ jobs:
         with:  
           microservice: ${{ env.MICROSERVICE }}
           docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION || 'eu-central-1' }} 
-              
               
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3

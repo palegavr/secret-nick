@@ -66,6 +66,16 @@ resource "aws_vpc_security_group_ingress_rule" "web_backend_from_web_ui" {
   description                  = "Allow API requests from Web UI to Web Backend"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "web_backend_from_prometheus" {
+  security_group_id            = aws_security_group.web_backend.id
+  referenced_security_group_id = aws_security_group.prometheus.id
+  from_port                    = var.node_exporter_port
+  to_port                      = var.node_exporter_port
+  ip_protocol                  = "tcp"
+  description                  = "Allow Prometheus to scrape Web Backend metrics"
+}
+
+
 resource "aws_vpc_security_group_egress_rule" "web_backend_egress" {
   security_group_id = aws_security_group.web_backend.id
 
@@ -99,16 +109,6 @@ resource "aws_vpc_security_group_ingress_rule" "web_ui_from_alb" {
   description                  = "Allow traffic from ALB to Web UI"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "web_ui_http_public" {
-  security_group_id = aws_security_group.web_ui.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  from_port   = var.web_ui_port
-  to_port     = var.web_ui_port
-  ip_protocol = "tcp"
-  description = "Allow HTTP from anywhere"
-}
-
 resource "aws_vpc_security_group_egress_rule" "web_ui_egress" {
   security_group_id = aws_security_group.web_ui.id
 
@@ -118,6 +118,105 @@ resource "aws_vpc_security_group_egress_rule" "web_ui_egress" {
 }
 
 ################################################################################
+# Security Group for Node Exporter
+################################################################################
+
+resource "aws_security_group" "node_exporter" {
+  name        = "${var.name_prefix}-node-exporter-sg"
+  description = "Security group for Node Exporter on EC2 instances"
+  vpc_id      = var.vpc_id
+
+  tags = merge(
+    { Name = "${var.name_prefix}-node-exporter-sg" },
+    var.tags
+  )
+}
+
+resource "aws_vpc_security_group_ingress_rule" "node_exporter_from_prometheus" {
+  security_group_id            = aws_security_group.node_exporter.id
+  referenced_security_group_id = aws_security_group.prometheus.id
+  from_port                    = var.node_exporter_port
+  to_port                      = var.node_exporter_port
+  ip_protocol                  = "tcp"
+  description                  = "Allow Prometheus to scrape Node Exporter"
+}
+
+resource "aws_vpc_security_group_egress_rule" "node_exporter_egress" {
+  security_group_id = aws_security_group.node_exporter.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+  description       = "Allow all outbound traffic"
+}
+
+################################################################################
+# Security Group for Prometheus
+################################################################################
+
+resource "aws_security_group" "prometheus" {
+  name        = "${var.name_prefix}-prometheus-sg"
+  description = "Security group for Prometheus instances"
+  vpc_id      = var.vpc_id
+
+  tags = merge(
+    { Name = "${var.name_prefix}-prometheus-sg" },
+    var.tags
+  )
+}
+
+resource "aws_vpc_security_group_ingress_rule" "prometheus_from_alb" {
+  security_group_id            = aws_security_group.prometheus.id
+  referenced_security_group_id = aws_security_group.alb.id
+  from_port                    = var.prometheus_port
+  to_port                      = var.prometheus_port
+  ip_protocol                  = "tcp"
+  description                  = "Allow ALB to reach Prometheus"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "prometheus_from_grafana" {
+  security_group_id            = aws_security_group.prometheus.id
+  referenced_security_group_id = aws_security_group.grafana.id
+  from_port                    = var.prometheus_port
+  to_port                      = var.prometheus_port
+  ip_protocol                  = "tcp"
+  description                  = "Allow Grafana to access Prometheus"
+}
+
+resource "aws_vpc_security_group_egress_rule" "prometheus_egress" {
+  security_group_id = aws_security_group.prometheus.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+  description       = "Allow all outbound traffic from Prometheus"
+}
+
+
+################################################################################
+# Security Group for Grafana
+################################################################################
+
+resource "aws_security_group" "grafana" {
+  name   = "${var.name_prefix}-grafana-sg"
+  vpc_id = var.vpc_id
+
+  tags = merge({ Name = "${var.name_prefix}-grafana-sg" }, var.tags)
+}
+
+resource "aws_vpc_security_group_ingress_rule" "grafana_ingress" {
+  security_group_id            = aws_security_group.grafana.id
+  referenced_security_group_id = aws_security_group.alb.id
+  from_port         = var.grafana_port
+  to_port           = var.grafana_port
+  ip_protocol       = "tcp"
+  description       = "Allow access to Grafana"
+}
+
+resource "aws_vpc_security_group_egress_rule" "grafana_egress" {
+  security_group_id = aws_security_group.grafana.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+  description       = "Allow all outbound traffic"
+}
+
+
 # Security Group for RDS
 ################################################################################
 

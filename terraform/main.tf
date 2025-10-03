@@ -23,6 +23,9 @@ module "security_groups" {
   web_backend_port = var.web_backend_port
   web_ui_port      = var.web_ui_port
   rds_port         = var.rds_port
+  prometheus_port  = var.prometheus_port
+  grafana_port     = var.grafana_port
+  node_exporter_port = var.node_exporter_port
 
   # Access settings
   alb_ingress_ports = var.alb_ingress_ports
@@ -39,8 +42,9 @@ module "ec2" {
 
   source   = "./modules/03-ec2"
   ami      = var.ami
-  sgs      = each.key == "dotnet" ? [module.security_groups.web_backend_security_group_id] : [module.security_groups.web_ui_security_group_id]
+  sgs      = each.key == "dotnet" ? [module.security_groups.web_backend_security_group_id, module.security_groups.node_exporter_security_group_id] : (each.key == "prometheus" ? [module.security_groups.prometheus_security_group_id] : (each.key == "grafana" ? [module.security_groups.grafana_security_group_id] : [module.security_groups.web_ui_security_group_id, module.security_groups.node_exporter_security_group_id]))
   ec2_name = each.key
+  #place dotnet(backend) to private subnet
   subnet                      = module.vpc.vpc_subnet_ids["subnet0"]
   instance_type               = var.instance_type
   create_iam_instance_profile = true
@@ -48,8 +52,11 @@ module "ec2" {
   iam_role_policies           = var.iam_role_policies
   web_ui_port                 = var.web_ui_port
   web_backend_port            = var.web_backend_port
-  port                        = each.key == "dotnet" ? var.web_backend_port : (each.key == "react" || each.key == "angular" ? var.web_ui_port : 80)
-  target_group_arn            = each.key == "angular" ? module.alb.web_ui_angular_target_group_arn : each.key == "react" ? module.alb.web_ui_react_target_group_arn : each.key == "dotnet" ? module.alb.backend_target_group_arn : null
+  prometheus_port             = var.prometheus_port
+  grafana_port                = var.grafana_port
+  node_exporter_port          = var.node_exporter_port
+  ports                       = local.ec2_ports_map[each.key]
+  target_group_arn = each.key == "angular" ? module.alb.web_ui_angular_target_group_arn : each.key == "react" ? module.alb.web_ui_react_target_group_arn : each.key == "grafana" ? module.alb.grafana_target_group_arn : each.key == "prometheus" ? module.alb.prometheus_target_group_arn : null
   associate_public_ip_address = true
 
 }
@@ -85,6 +92,23 @@ module "alb" {
   security_group_id = module.security_groups.alb_security_group_id
   web_backend_port  = var.web_backend_port
   web_ui_port       = var.web_ui_port
+  prometheus_port   = var.prometheus_port
+  grafana_port      = var.grafana_port
   domain_name       = var.domain_name
   certificate_arn   = var.certificate_arn
+}
+
+
+################################################################################
+# Locals
+################################################################################
+
+locals {
+  ec2_ports_map = {
+    react      = [var.web_ui_port, var.node_exporter_port]
+    angular    = [var.web_ui_port, var.node_exporter_port]
+    dotnet     = [var.web_backend_port, var.node_exporter_port]
+    prometheus = [var.prometheus_port]
+    grafana    = [var.grafana_port]
+  }
 }

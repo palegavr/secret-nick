@@ -56,6 +56,13 @@ resource "aws_iam_role" "this" {
   tags = var.tags
 }
 
+resource "aws_iam_role_policy_attachment" "prometheus_ec2_discovery" {
+  count      = var.ec2_name == "prometheus" ? 1 : 0
+  role       = aws_iam_role.this[0].name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+}
+
+
 resource "aws_iam_role_policy_attachment" "this" {
   for_each = { for k, v in var.iam_role_policies : k => v if var.create_iam_instance_profile }
 
@@ -76,6 +83,20 @@ resource "aws_iam_instance_profile" "this" {
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+################################################################################
+# Locals
+################################################################################
+
+locals {
+  ec2_ports_map = {
+    react      = [var.web_ui_port, var.node_exporter_port]
+    angular    = [var.web_ui_port, var.node_exporter_port]
+    dotnet     = [var.web_backend_port, var.node_exporter_port]
+    prometheus = [var.prometheus_port]
+    grafana    = [var.grafana_port]
   }
 }
 
@@ -102,12 +123,12 @@ resource "aws_instance" "this" {
 
 resource "aws_lb_target_group_attachment" "this" {
 
-  count = contains(["angular", "react", "dotnet"], var.ec2_name) ? 1 : 0
+  count = contains(["angular", "react", "dotnet", "grafana", "prometheus"], var.ec2_name) ? 1 : 0
 
 
   target_group_arn = var.target_group_arn
   target_id        = aws_instance.this.id
-  port             = var.port
+  port             = local.ec2_ports_map[var.ec2_name][0]
 
   depends_on = [aws_instance.this]
 }

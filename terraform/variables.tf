@@ -64,6 +64,21 @@ variable "web_ui_port" {
   type        = number
 }
 
+variable "prometheus_port" {
+  description = "Port for Prometheus service"
+  type        = number
+}
+
+variable "grafana_port" {
+  description = "Port for Grafana service"
+  type        = number
+}
+
+variable "node_exporter_port" {
+  description = "Port for Node Exporter service"
+  type        = number
+}
+
 variable "alb_ingress_ports" {
   description = "Ports to allow on ALB"
   type        = list(number)

@@ -7,7 +7,7 @@ on:
       microservice:
         type: string
         required: true
-        description: 'Target microservice (react, angular, dotnet)'
+        description: 'Target microservice (react, angular, dotnet, grafana, prometheus)'
 
   workflow_dispatch:
     inputs:
@@ -18,21 +18,19 @@ on:
         options:
           - react
           - angular
-          - dotnet
-
+          - dotnet  
+          - grafana
+          - prometheus              
 jobs:
   build-and-push:
     name: build ${{ inputs.microservice }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: set environment variables
         id: vars
@@ -40,26 +38,6 @@ jobs:
         with:
           microservice: ${{ inputs.microservice }}
           docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION || 'eu-central-1' }} 
-          
-      - name: Check for Release PR via GitHub API
-        id: check_release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          IS_RELEASE=false
-          RELEASE_VERSION=""
-          SOURCE_BRANCH=$(gh api "/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" --jq '.[0].head.ref // empty')
-          if [[ -n "$SOURCE_BRANCH" ]]; then
-            if [[ "$SOURCE_BRANCH" =~ ^release/v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
-              IS_RELEASE=true
-              RELEASE_VERSION="${BASH_REMATCH[1]}"
-            fi
-          fi
-          echo "is_release_merge=$IS_RELEASE" >> "$GITHUB_OUTPUT"
-          echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -69,7 +47,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
+    
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -79,13 +57,8 @@ jobs:
           tags: |
             ${{ env.REPO }}:latest
             ${{ env.REPO }}:${{ env.SHORT_SHA }}
-            ${{ steps.check_release.outputs.is_release_merge == 'true' && format('{0}:{1}', env.REPO, steps.check_release.outputs.release_version) || '' }}
 
       - name: Notify about successful build
         if: success()
         run: |
-          if [[ "${{ steps.check_release.outputs.is_release_merge }}" == "true" ]]; then
-            echo "::notice::Successfully built and pushed ${{ inputs.microservice }} release image with tags: latest, ${{ env.SHORT_SHA }}, v${{ steps.check_release.outputs.release_version }}"
-          else
-            echo "::notice::Successfully built and pushed ${{ inputs.microservice }} image with tags: latest, ${{ env.SHORT_SHA }}"
-          fi
+          echo "::notice::Successfully built and pushed ${{ inputs.microservice }} image with tags: latest, ${{ steps.vars.outputs.SHORT_SHA }}"
