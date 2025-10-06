@@ -178,7 +178,7 @@ metrics:
     aws_statistics: [Maximum]
     period_seconds: 21600
     range_seconds: 86400
-    delay_seconds: 3600
+    delay_seconds: 7200
 EOT",
       "chown ec2-user:ec2-user /home/ec2-user/cloudwatch-config-billing.yml",
       "chmod 600 /home/ec2-user/cloudwatch-config-billing.yml"
