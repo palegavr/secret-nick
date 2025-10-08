@@ -56,11 +56,11 @@
     },
     {
       "type": "graph",
-      "title": "Infrastructure Costs (USD)",
+      "title": "RDS Freeable Memory (MB)",
       "targets": [
         {
-          "expr": "aws_billing_estimated_charges_maximum{currency=\"USD\"}",
-          "legendFormat": "{{currency}}",
+          "expr": "aws_rds_freeable_memory{DBInstanceIdentifier=\"postgres-db\"} / 1024 / 1024",
+          "legendFormat": "{{DBInstanceIdentifier}}",
           "refId": "A"
         }
       ],
@@ -68,7 +68,29 @@
       "points": false,
       "linewidth": 2,
       "fill": 1,
-      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 6 }
+      "yaxes": [
+        {
+          "format": "megabytes",
+          "label": "Memory (MB)",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "show": false
+        }
+      ],
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 6 },
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "line": true,
+          "op": "lt",
+          "value": 200,
+          "fill": true,
+          "yaxis": "left"
+        }
+      ]
     }
   ]
 }
