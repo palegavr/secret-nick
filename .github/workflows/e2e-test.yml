@@ -1,4 +1,5 @@
 name: e2e test
+run-name: "E2E Run - ${{ github.event.inputs.config }} (${{ github.event.inputs.testType }})"
 
 on:
   workflow_dispatch:
