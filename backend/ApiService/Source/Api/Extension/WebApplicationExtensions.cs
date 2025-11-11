@@ -50,6 +50,7 @@ namespace Epam.ItMarathon.ApiService.Api.Extension
             _ = application.MapSystemEndpoints();
             _ = application.MapRoomEndpoints();
             _ = application.MapUserEndpoints();
+            _ = application.MapAiEndpoints();
 
             #endregion MinimalApi
 
