@@ -19,7 +19,7 @@
       <h3 class="modal__title">Wishlist</h3>
 
       @if (wishListInfo().interests) {
-        <app-surprise-info [text]="wishListInfo().interests || ''" />
+        <app-surprise-info [withAiHelp]="true" [text]="wishListInfo().interests || ''"/>
       } @else {
         <ul class="modal__wish-list">
           @for (wishListItem of wishListInfo().wishList; track $index) {

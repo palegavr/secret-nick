@@ -224,3 +224,7 @@ export interface LottieConfig {
 export interface RoomUpdateRequest extends Partial<BasicRoomDetails> {
   invitationNote?: string;
 }
+
+export interface IdeasForGift {
+  ideasForGift: string;
+}
