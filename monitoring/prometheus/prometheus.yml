@@ -1,0 +1,58 @@
+global: 
+  scrape_interval: 60s
+
+scrape_configs:
+  - job_name: 'backend'
+    ec2_sd_configs:
+      - region: eu-central-1
+        port: 9100
+        filters:
+          - name: tag:Name
+            values: ['dotnet']
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance_name
+
+  - job_name: 'react-frontend'
+    ec2_sd_configs:
+      - region: eu-central-1
+        port: 9100
+        filters:
+          - name: tag:Name
+            values: ['react']
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance_name
+
+  - job_name: 'angular-frontend'
+    ec2_sd_configs:
+      - region: eu-central-1
+        port: 9100
+        filters:
+          - name: tag:Name
+            values: ['angular']
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance_name
+
+  - job_name: 'cloudwatch-exporter'
+    ec2_sd_configs:
+      - region: eu-central-1
+        port: 9106
+        filters:
+          - name: tag:Name
+            values: ['prometheus']
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance_name
+
+  - job_name: 'cloudwatch-exporter-billing'
+    ec2_sd_configs:
+      - region: eu-central-1
+        port: 9107
+        filters:
+          - name: tag:Name
+            values: ['prometheus']
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance_name

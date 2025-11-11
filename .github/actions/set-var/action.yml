@@ -1,8 +1,8 @@
-name: "Set Deployment Variables"
+name: "set environment variables"
 
 inputs:
   microservice:
-    description: "Target microservice (react, angular, dotnet)"
+    description: "Target microservice (react, angular, dotnet, grafana, prometheus)"
     required: true
 
   docker_hub_username:
@@ -78,7 +78,7 @@ runs:
         echo "CONTEXT=frontend/react" >> $GITHUB_ENV
         echo "DOCKERFILE=frontend/react/Dockerfile" >> $GITHUB_ENV
         echo "REPO=${{ inputs.docker_hub_username }}/react" >> $GITHUB_ENV
-
+        
         echo "Updating BASE_API_URL in React project"
         jq --arg url "$BASE_API_URL" '.environment.backendApiUrl = $url' frontend/react/config.json > tmp.config.json && mv tmp.config.json frontend/react/config.json
         cat frontend/react/config.json
@@ -98,6 +98,7 @@ runs:
         jq --arg url "$BASE_API_URL" '.environment.backendApiUrl = $url' frontend/angular/config.json > tmp.config.json && mv tmp.config.json frontend/angular/config.json
         cat frontend/angular/config.json
 
+
     - name: Set Dotnet Environment
       if: ${{ inputs.microservice == 'dotnet' }}
       shell: bash
@@ -108,3 +109,25 @@ runs:
         echo "CONTEXT=backend/ApiService" >> $GITHUB_ENV
         echo "DOCKERFILE=backend/ApiService/Dockerfile" >> $GITHUB_ENV
         echo "REPO=${{ inputs.docker_hub_username }}/dotnet" >> $GITHUB_ENV
+    
+    - name: Set Grafana Environment
+      if: ${{ inputs.microservice == 'grafana' }}
+      shell: bash
+      run: |
+        echo "PORT=3001" >> $GITHUB_ENV
+        echo "CONTAINER_NAME=grafana-app" >> $GITHUB_ENV
+        echo "INSTANCE_NAME=grafana" >> $GITHUB_ENV
+        echo "CONTEXT=monitoring/grafana" >> $GITHUB_ENV
+        echo "DOCKERFILE=monitoring/grafana/Dockerfile" >> $GITHUB_ENV
+        echo "REPO=${{ inputs.docker_hub_username }}/grafana" >> $GITHUB_ENV
+
+    - name: Set Prometheus Environment
+      if: ${{ inputs.microservice == 'prometheus' }}
+      shell: bash
+      run: |
+        echo "PORT=9090" >> $GITHUB_ENV
+        echo "CONTAINER_NAME=prometheus-app" >> $GITHUB_ENV
+        echo "INSTANCE_NAME=prometheus" >> $GITHUB_ENV
+        echo "CONTEXT=monitoring/prometheus" >> $GITHUB_ENV
+        echo "DOCKERFILE=monitoring/prometheus/Dockerfile" >> $GITHUB_ENV
+        echo "REPO=${{ inputs.docker_hub_username }}/prometheus" >> $GITHUB_ENV

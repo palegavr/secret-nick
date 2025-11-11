@@ -19,7 +19,7 @@ jobs:
     uses: ./.github/workflows/deploy-jobs.yml
     strategy:
       matrix:
-        microservice: ["react", "angular", "dotnet"]
+        microservice: ["react", "angular", "dotnet", "grafana", "prometheus"]
     with:
       microservice: ${{ matrix.microservice }}
       image_tag: ${{ inputs.tag }}
