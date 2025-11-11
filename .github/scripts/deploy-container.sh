@@ -2,7 +2,7 @@
 set -e
 
 # Checking all env variables
-variables=("REPO" "MICROSERVICE_NAME" "IMAGE_TAG" "INSTANCE_ID" "CONTAINER_NAME" "PORT" "DOCKER_USERNAME" "DOCKER_PASSWORD")
+variables=("REPO" "MICROSERVICE_NAME" "IMAGE_TAG" "INSTANCE_ID" "CONTAINER_NAME" "PORT" "DOCKER_USERNAME" "DOCKER_PASSWORD" "GEMINI_API_KEY")
 
 for var in "${variables[@]}"; do
   if [ -z "${!var}" ]; then
@@ -77,7 +77,7 @@ case "$MICROSERVICE_NAME" in
   CONNECTIONSTRING="Host=${DB_HOST};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD};"
 
   ESCAPED_CONNECTIONSTRING=${CONNECTIONSTRING//\$/\\\$}
-  EXTRA_ENV="-e ASPNETCORE_ENVIRONMENT=Development -e ConnectionStrings__DbConnectionString=\"$ESCAPED_CONNECTIONSTRING\""
+  EXTRA_ENV="-e ASPNETCORE_ENVIRONMENT=Development -e ConnectionStrings__DbConnectionString=\"$ESCAPED_CONNECTIONSTRING\" -e GOOGLE_API_KEY=\"${GEMINI_API_KEY}\""
 
   echo "Generated ConnectionString: ${CONNECTIONSTRING}"
   ;;

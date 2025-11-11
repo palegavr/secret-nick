@@ -260,6 +260,7 @@ export const enum Endpoint {
   rooms = '/api/rooms',
   users = '/api/users',
   roomsDraw = '/api/rooms/draw',
+  generateIdeasForGift = '/api/ai/generate-ideas-for-gift',
 }
 
 export const enum NavigationLinkSegment {

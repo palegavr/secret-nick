@@ -24,4 +24,24 @@
     border-top: 1px solid $surprise-info-text-border-top-color;
     overflow: auto;
   }
+
+  &__ai_thinking_text {
+    margin-top: 24px;
+    font-style: italic;
+  }
+
+  &__ai_proposals {
+    margin-top: 24px;
+
+    &__title {
+      font-weight: bold;
+    }
+
+    &__content {
+    }
+  }
+
+  &__ask_ai_button {
+    margin-top: 24px;
+  }
 }

@@ -11,7 +11,7 @@ import {
   RoomDetails,
   User,
   JoinRoomResponse,
-  RoomUpdateRequest,
+  RoomUpdateRequest, IdeasForGift,
 } from '../../app.models';
 
 @Injectable({
@@ -108,5 +108,17 @@ export class ApiService {
       params,
       observe: 'response',
     });
+  }
+
+  public generateIdeasForGift(
+    interests: string,
+  ): Observable<HttpResponse<IdeasForGift>> {
+    return this.#http.post<IdeasForGift>(
+      `${this.#baseUrl}${Endpoint.generateIdeasForGift}`,
+      {
+        interests,
+      },
+      {observe: 'response'}
+    );
   }
 }

@@ -2,4 +2,22 @@
   <h3 class="surprise__title title-sm">Surprise me!</h3>
 
   <p class="surprise__text">{{ text() }}</p>
+
+  @if (withAiHelp()) {
+    @if (!proposalsGeneratedByAI().loading) {
+      @if (proposalsGeneratedByAI().content; as proposals) {
+        <p class="surprise__ai_proposals">
+          <span class="surprise__ai_proposals__title">AI proposals: </span>
+          <span class="surprise__ai_proposals__content">{{ proposals }}</span>
+        </p>
+      }
+    } @else {
+      <p class="surprise__ai_thinking_text">Thinking...</p>
+    }
+    <app-button
+      class="secondary small surprise__ask_ai_button"
+      [isDisabled]="proposalsGeneratedByAI().loading"
+      [text]="'Ask AI to help you choose a gift'"
+      (click)="generateProposals()"/>
+  }
 </section>

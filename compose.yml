@@ -30,6 +30,7 @@ services:
      environment:
        ASPNETCORE_ENVIRONMENT: Development
        ConnectionStrings__DbConnectionString: ${CONNECTIONSTRINGS__DBCONNECTIONSTRING}
+       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
      ports:
        - "8080:8080"
      networks:
