@@ -83,6 +83,7 @@ jobs:
           PORT: ${{ env.PORT }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Verify deployment
         run: .github/scripts/verify-deployment.sh
