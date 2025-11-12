@@ -42,7 +42,7 @@ const RandomizationModal = ({
             />
           ) : null}
 
-          {wishlistData ? <Wishlist {...wishlistData} /> : null}
+          {wishlistData ? <Wishlist {...wishlistData} withAiHelp /> : null}
         </div>
 
         <div className="randomization-modal__back-button">

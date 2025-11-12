@@ -25,7 +25,7 @@ const Wishlist = (props: WishlistProps) => {
       ) : null}
 
       {props.variant === "surprise" ? (
-        <SurpriseItem text={props.interests} />
+        <SurpriseItem text={props.interests} withAiHelp={props.withAiHelp} />
       ) : null}
     </div>
   );
