@@ -15,6 +15,7 @@ const Modal = ({
   onClose,
   onConfirm,
   children,
+  confirmButtonText = "Go Back to Room",
 }: ModalProps) => {
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -45,7 +46,7 @@ const Modal = ({
 
         <div className="modal__back-button">
           <Button size="medium" width={225} onClick={onConfirm}>
-            Go Back to Room
+            {confirmButtonText}
           </Button>
         </div>
       </div>

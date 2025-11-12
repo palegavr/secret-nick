@@ -1,0 +1,15 @@
+<app-common-modal-template
+  [headerPictureName]="picName"
+  [headerTitle]="title"
+  [buttonText]="confirmButtonText"
+  [cancelButtonText]="cancelButtonText"
+  [subtitle]="subtitle"
+  (buttonAction)="onButtonClick()"
+  (closeModal)="onCloseModal()"
+  (cancelButtonAction)="onCancelButtonClick()"
+>
+  <p class="participant-delete-modal__content">Are you sure you want to remove
+    <span class="participant-delete-modal__content__participant-full-name">
+      {{ participantFullName() }}</span>?
+  </p>
+</app-common-modal-template>

@@ -25,6 +25,7 @@ import { ModalService } from '../../../core/services/modal';
 import { getPersonalInfo } from '../../../utils/get-personal-info';
 import { UserService } from '../../../room/services/user';
 import type { User } from '../../../app.models';
+import { ParticipantDeleteModal } from './components/delete-participant-modal/participant-delete-modal';
 
 @Component({
   selector: 'li[app-participant-card]',
@@ -108,7 +109,20 @@ export class ParticipantCard {
   }
 
   public onDeleteClick(): void {
-    this.#userService.deleteUser(this.participant().id).subscribe();
+    this.#modalService.openWithResult(
+      ParticipantDeleteModal,
+      {
+        participantFullName: `${this.participant().firstName} ${this.participant().lastName}`
+      },
+      {
+        buttonAction: () => {
+          this.#modalService.close();
+          this.#userService.deleteUser(this.participant().id).subscribe();
+        },
+        closeModal: () => this.#modalService.close(),
+        cancelButtonAction: () => this.#modalService.close(),
+      }
+    );
   }
 
   public onCopyHover(target: EventTarget | null): void {
