@@ -64,6 +64,21 @@ variable "web_ui_port" {
   type        = number
 }
 
+variable "prometheus_port" {
+  description = "Port for Prometheus service"
+  type        = number
+}
+
+variable "grafana_port" {
+  description = "Port for Grafana service"
+  type        = number
+}
+
+variable "node_exporter_port" {
+  description = "Port for Node Exporter service"
+  type        = number
+}
+
 variable "alb_ingress_ports" {
   description = "Ports to allow on ALB"
   type        = list(number)
@@ -203,5 +218,19 @@ variable "db_storage_size" {
 
 variable "db_subnet_group_name" {
   description = "The name of the subnet group where RDS instance is placed"
+  type        = string
+}
+
+################################
+# SSL
+################################
+
+variable "domain_name" {
+  description = "The base domain name for the application"
+  type        = string
+}
+
+variable "certificate_arn" {
+  description = "ACM certificate arn for you domain (manual)"
   type        = string
 }
