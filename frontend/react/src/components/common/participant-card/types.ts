@@ -8,4 +8,5 @@ export interface ParticipantCardProps {
   participantLink?: string;
   onInfoButtonClick?: () => void;
   onDeleteButtonClick?: () => void;
+  isRoomClosed?: boolean;
 }

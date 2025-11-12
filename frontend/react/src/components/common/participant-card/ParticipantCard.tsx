@@ -15,6 +15,7 @@ const ParticipantCard = ({
   participantLink = "",
   onInfoButtonClick,
   onDeleteButtonClick,
+  isRoomClosed = false,
 }: ParticipantCardProps) => {
   return (
     <ItemCard title={`${firstName} ${lastName}`} isFocusable>
@@ -42,7 +43,7 @@ const ParticipantCard = ({
           <InfoButton infoMessage={adminInfo} />
         ) : null}
 
-        {isCurrentUserAdmin && !isAdmin ? (
+        {!isRoomClosed && isCurrentUserAdmin && !isAdmin ? (
           <DeleteButton onClick={onDeleteButtonClick} />
         ) : null}
       </div>

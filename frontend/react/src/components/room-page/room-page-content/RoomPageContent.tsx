@@ -106,6 +106,7 @@ const RoomPageContent = ({
         <ParticipantsList
           participants={participants}
           onDeleteParticipant={onDeleteParticipant}
+          isRoomClosed={roomDetails.closedOn != null}
         />
 
         <div className="room-page-content-column">
