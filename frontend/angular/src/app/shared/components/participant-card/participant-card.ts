@@ -35,6 +35,7 @@ import type { User } from '../../../app.models';
 export class ParticipantCard {
   readonly participant = input.required<User>();
   readonly isCurrentUserAdmin = input.required<boolean>();
+  readonly isRoomClosed = input<boolean>(false);
 
   readonly showCopyIcon = input<boolean>(false);
   readonly userCode = input<string>('');

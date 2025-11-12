@@ -35,7 +35,7 @@
     />
   }
 
-  @if (isCurrentUserAdmin() && !participant().isAdmin) {
+  @if (!isRoomClosed() && isCurrentUserAdmin() && !participant().isAdmin) {
     <app-icon-button
       [iconName]="iconDelete"
       [ariaLabel]="ariaLabelDelete"

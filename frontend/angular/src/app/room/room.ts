@@ -65,6 +65,7 @@ export class Room implements OnInit {
   public readonly isRoomDrawn = this.#roomService.isRoomDrawn;
   public readonly currentUser = this.#userService.currentUser;
   public readonly userCode = this.#userService.userCode;
+  public readonly isRoomClosed = computed(() => this.roomData().closedOn != null);
 
   public readonly isBackgroundAnimationActive = signal<boolean>(false);
 

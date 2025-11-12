@@ -14,6 +14,7 @@ export class ParticipantList {
   public readonly maxParticipants = input<number>(20);
   public readonly isAdmin = input<boolean>(false);
   public readonly userCode = input<string>('');
+  public readonly isRoomClosed = input<boolean>(false);
 
   @HostBinding('class.non-admin-list')
   get adminClass(): boolean {
