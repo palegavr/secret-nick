@@ -7,7 +7,7 @@ on:
       microservice:
         type: string
         required: true
-        description: 'Target microservice (react, angular, dotnet)'
+        description: 'Target microservice (react, angular, dotnet, grafana, prometheus)'
 
   workflow_dispatch:
     inputs:
@@ -18,8 +18,9 @@ on:
         options:
           - react
           - angular
-          - dotnet
-
+          - dotnet  
+          - grafana
+          - prometheus              
 jobs:
   build-and-push:
     name: build ${{ inputs.microservice }}
@@ -43,7 +44,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION || 'eu-central-1' }} 
-          
+
       - name: Check for Release PR via GitHub API
         id: check_release
         env:
@@ -69,7 +70,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
+    
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
