@@ -121,10 +121,10 @@ export class Room implements OnInit {
     this.#modalService.openWithResult(
       GifteeInfoModal,
       {
-        personalInfo: getPersonalInfo(this.currentUser()),
+        personalInfo: getPersonalInfo(this.giftee()),
         wishListInfo: {
           interests: this.giftee().interests || '',
-          wishList: this.currentUser()?.wishList || [],
+          wishList: this.giftee().wishList || [],
         },
       },
       {
